@@ -1,0 +1,46 @@
+name: Mon-QTF-4 CI/CD Pipeline
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main", "development"]
+
+env:
+  FOUNDRY_PROFILE: default
+
+jobs:
+  build-and-test:
+    name: Build & Test Mon-QTF-4
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Build Contracts
+        run: forge build --sizes
+
+      - name: Run Integration Tests (Monad Fork)
+        run: forge test --fork-url ${{ secrets.MONAD_TESTNET_RPC }} -vvv
+
+  deploy:
+    name: Deploy Execution Contracts
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+      - name: Broadcast Deployment
+        run: |
+          forge script script/deploy/MonQTFExecution.s.sol:DeployMonQTF \
+            --rpc-url ${{ secrets.MONAD_TESTNET_RPC }} \
+            --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} \
+            --broadcast --verify
