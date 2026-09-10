@@ -1,0 +1,8 @@
+.env
+.git
+.github
+out/
+cache/
+broadcast/
+node_modules/
+*.log
