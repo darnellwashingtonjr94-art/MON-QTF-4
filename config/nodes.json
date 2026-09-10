@@ -1,0 +1,13 @@
+{
+  "cluster_id": "Mon-QTF-4-Century",
+  "target_chain": "Monad-Mainnet",
+  "total_nodes": 100,
+  "strategy": "parallel_arbitrage_and_liquidations",
+  "regions": [
+    { "name": "us-east", "count": 20 },
+    { "name": "us-west", "count": 20 },
+    { "name": "eu-central", "count": 20 },
+    { "name": "ap-southeast", "count": 20 },
+    { "name": "ap-northeast", "count": 20 }
+  ]
+}
